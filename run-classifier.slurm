@@ -1,9 +1,11 @@
 #!/bin/bash
-#SBATCH --partition=debug
-#SBATCH --qos=debug_default
+#SBATCH --partition=gpu
+#SBATCH --qos=gpu-p40_default
+#SBATCH --gres=gpu:p40:1
+
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --job-name="Corallian ResNet-HDC Create Anaconda Environment"
+#SBATCH --job-name="Corallian ResNet-HDC Run Classifier"
 #SBATCH --output="%x.out"
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=justin_lim@dlsu.edu.ph  
@@ -42,8 +44,7 @@ module purge
 module load anaconda
 
 ## Main job. Run your codes and executables here; `srun` is optional.
-srun conda create -y -n corallian-env
-srun conda install -n corallian-env -c pytorch --file requirements.txt
+srun conda run -n corallian-env classifier.py
 
 ## Flush the TMPDIR.
 if [[ $custom_tmp == "yes" ]]; then
