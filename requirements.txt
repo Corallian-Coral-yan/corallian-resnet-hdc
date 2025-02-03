@@ -1,5 +1,6 @@
-numpy
+numpy<2
 pandas
 pytorch==2.0.1
+pytorch-cuda==11.4
 scikit-learn
 torchvision

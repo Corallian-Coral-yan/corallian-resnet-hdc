@@ -9,6 +9,8 @@ from torch.utils.data.sampler import SubsetRandomSampler
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+torch.zeros(1).cuda()
+
 # %%
 ANNOTATIONS_FILE = r"./dataset/CROPPED-CORALS/index.csv"
 IMG_DIR = r"./dataset/CROPPED-CORALS/"

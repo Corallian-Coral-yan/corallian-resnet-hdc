@@ -43,7 +43,7 @@ module load anaconda
 
 ## Main job. Run your codes and executables here; `srun` is optional.
 srun conda create -y -n corallian-env
-srun conda install -n corallian-env -c pytorch --file requirements.txt
+srun conda install -n corallian-env -c pytorch -c pytorch-test --file requirements.txt
 
 ## Flush the TMPDIR.
 if [[ $custom_tmp == "yes" ]]; then

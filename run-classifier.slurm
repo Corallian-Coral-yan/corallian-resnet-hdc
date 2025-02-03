@@ -44,9 +44,10 @@ module purge
 module load anaconda
 
 ## Main job. Run your codes and executables here; `srun` is optional.
-srun mamba activate corallian-env
-srun python classifier.py
-srun mamba deactivate
+mamba init
+mamba activate corallian-env
+python classifier.py
+mamba deactivate
 
 ## Flush the TMPDIR.
 if [[ $custom_tmp == "yes" ]]; then
