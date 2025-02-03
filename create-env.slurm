@@ -43,7 +43,7 @@ module load anaconda
 
 ## Main job. Run your codes and executables here; `srun` is optional.
 srun mamba create -y -n corallian-env
-srun mamba install -n corallian-env --file requirements.txt
+srun mamba install -n corallian-env -c pytorch --file requirements.txt
 
 ## Flush the TMPDIR.
 if [[ $custom_tmp == "yes" ]]; then
