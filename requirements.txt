@@ -1,5 +1,5 @@
 numpy
 pandas
-pytorch
+pytorch==2.0.1
 scikit-learn
 torchvision
