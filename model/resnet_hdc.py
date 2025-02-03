@@ -66,7 +66,6 @@ class ResidualHDCBlock_O(nn.Module):
         conv = self.conv_1x1_increase(conv)
 
         out = conv + residual
-
         return self.relu(out)
 
 
@@ -127,8 +126,10 @@ Resnet18-HDC
 """
 
 class ResNet18_HDC(nn.Module):
-    def __init__(self, num_classes=10):
+    def __init__(self, num_classes=10, verbose=False):
         super().__init__()
+
+        self.verbose = verbose
 
         # initially 3 channels (R, G, B)
         # Note: The version of ResNet implemented in the paper uses a different set of initial convolutions
@@ -154,30 +155,51 @@ class ResNet18_HDC(nn.Module):
         self.res5_1 = ResidualHDCBlock_O(256, 256, 256, 512, 5, downsample_rate=2)
         self.res5_2 = ResidualHDCBlock_X(512, 512, 512, 512, 9)
 
-        self.avgpool = nn.AvgPool2d(7, stride=1)
+        self.avgpool = nn.AvgPool2d(16, stride=1)
         self.fc = nn.Linear(512, num_classes)
 
     def forward(self, x):
+        self._print(x.size())
         x = self.res1_1(x)
+        self._print(x.size())
         x = self.res1_2(x)
+        self._print(x.size())
         x = self.res1_3(x)
+        self._print(x.size())
 
         x = self.maxpool(x)
+        self._print(x.size())
 
         x = self.res2_1(x)
+        self._print(x.size())
         x = self.res2_2(x)
+        self._print(x.size())
 
         x = self.res3_1(x)
+        self._print(x.size())
         x = self.res3_2(x)
+        self._print(x.size())
 
         x = self.res4_1(x)
+        self._print(x.size())
         x = self.res4_2(x)
+        self._print(x.size())
 
         x = self.res5_1(x)
+        self._print(x.size())
         x = self.res5_2(x)
+        self._print(x.size())
 
         x = self.avgpool(x)
+        self._print(x.size())
+        
         x = x.view(x.size(0), -1)
+        self._print(x.size())
         x = self.fc(x)
+        self._print(x.size())
 
         return x
+    
+    def _print(self, *args, **kwargs):
+        if self.verbose:
+            print(*args, **kwargs)
