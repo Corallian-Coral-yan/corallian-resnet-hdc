@@ -44,7 +44,9 @@ module purge
 module load anaconda
 
 ## Main job. Run your codes and executables here; `srun` is optional.
-srun conda run -n corallian-env classifier.py
+srun conda activate corallian-env
+srun python classifier.py
+srun conda deactivate
 
 ## Flush the TMPDIR.
 if [[ $custom_tmp == "yes" ]]; then
