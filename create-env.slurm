@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --job-name="Corallian ResNet-HDC Create Anaconda Environment"
-#SBATCH --output="%x.out"
+#SBATCH --output="create-env.out"
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=justin_lim@dlsu.edu.ph  
 
@@ -43,10 +43,7 @@ module load anaconda
 
 ## Main job. Run your codes and executables here; `srun` is optional.
 conda create -y -n corallian-env
-conda install pip
-mamba activate corallian-env
-pip install -r requirements.txt
-mamba deactivate
+conda install -n corallian-env -c pytorch -c nvidia --file requirements.txt
 
 ## Flush the TMPDIR.
 if [[ $custom_tmp == "yes" ]]; then

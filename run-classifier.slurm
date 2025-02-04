@@ -6,7 +6,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --job-name="Corallian ResNet-HDC Run Classifier"
-#SBATCH --output="%x.out"
+#SBATCH --output="run-classifier.out"
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=justin_lim@dlsu.edu.ph  
 
@@ -44,6 +44,9 @@ module purge
 module load anaconda
 
 ## Main job. Run your codes and executables here; `srun` is optional.
+nvidia-smi
+ldd --version
+
 mamba init
 mamba activate corallian-env
 python classifier.py

@@ -4,7 +4,6 @@ import pandas as pd
 import torch
 import torch.nn as nn
 from torchvision import datasets
-from torchvision.transforms import v2
 from torch.utils.data.sampler import SubsetRandomSampler
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
