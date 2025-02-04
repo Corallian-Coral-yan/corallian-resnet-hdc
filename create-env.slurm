@@ -42,8 +42,11 @@ module purge
 module load anaconda
 
 ## Main job. Run your codes and executables here; `srun` is optional.
-srun conda create -y -n corallian-env
-srun conda install -n corallian-env -c pytorch -c pytorch-test --file requirements.txt
+conda create -y -n corallian-env
+conda install pip
+mamba activate corallian-env
+pip install -r requirements.txt
+mamba deactivate
 
 ## Flush the TMPDIR.
 if [[ $custom_tmp == "yes" ]]; then
