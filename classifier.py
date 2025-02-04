@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
-from torchvision import datasets
+from torchvision import datasets, transforms
 from torch.utils.data.sampler import SubsetRandomSampler
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -34,7 +34,7 @@ from dataset.image_dataset import ImageDataset
 
 def data_loader(batch_size, random_seed=42, valid_size=0.1, shuffle=True, test=False):
     # define transforms
-    transform = None
+    transform = transforms.ToTensor()
     target_transform = None
 
     if test:
