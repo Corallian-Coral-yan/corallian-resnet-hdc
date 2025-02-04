@@ -34,7 +34,7 @@ from dataset.image_dataset import ImageDataset
 
 def data_loader(batch_size, random_seed=42, valid_size=0.1, shuffle=True, test=False):
     # define transforms
-    transform = v2.ToDtype(torch.float32)
+    transform = None
     target_transform = None
 
     if test:
@@ -94,6 +94,7 @@ for epoch in range(num_epochs):
         print(f"Epoch {epoch + 1}/{num_epochs} | Batch {i}")
         
         #Move tensors to the configured device
+        images = images.float()
         images = images.to(device)
         labels = labels.long()
         labels = labels.to(device)
