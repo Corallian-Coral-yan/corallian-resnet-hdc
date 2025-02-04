@@ -6,6 +6,7 @@ from sklearn.preprocessing import LabelEncoder
 import torch
 from torch.utils.data import Dataset
 import torchvision.io
+from PIL import Image
 
 class ImageDataset(Dataset):
     def __init__(self, annotations_file, img_dir, train=False, transform=None, target_transform=None, random_state=1, verbose=True):
@@ -44,7 +45,7 @@ class ImageDataset(Dataset):
 
     def __getitem__(self, idx):
         img_path = os.path.join(self.img_dir, self.img_labels.iloc[idx, 0])
-        image = torchvision.io.decode_image(img_path)
+        image = Image.open(img_path)
         label = self.img_labels.iloc[idx, 1]
 
         if self.transform:
