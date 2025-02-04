@@ -2,6 +2,7 @@
 
 import os
 import pandas as pd
+from pathlib import PureWindowsPath, PurePosixPath
 from sklearn.preprocessing import LabelEncoder
 import torch
 from torch.utils.data import Dataset
@@ -28,6 +29,14 @@ class ImageDataset(Dataset):
         self.le.fit(raw_labels["annotation"])
         raw_labels["annotation"] = self.le.transform(raw_labels["annotation"])
 
+        # paths in annotations file are encoded in windows format
+        # change them to posix if necessary
+        if os.name != "nt":
+            raw_labels["filepath"] = raw_labels["filepath"].apply(
+                lambda path: str(PurePosixPath(*PureWindowsPath(path).parts))
+            )
+
+        print(raw_labels["filepath"])
 
         if train:
             self.img_labels = raw_labels.sample(frac=0.8,random_state=random_state)
