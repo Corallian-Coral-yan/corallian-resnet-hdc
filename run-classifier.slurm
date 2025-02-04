@@ -44,9 +44,6 @@ module purge
 module load anaconda
 
 ## Main job. Run your codes and executables here; `srun` is optional.
-nvidia-smi
-ldd --version
-
 mamba init
 mamba activate corallian-env
 python classifier.py
