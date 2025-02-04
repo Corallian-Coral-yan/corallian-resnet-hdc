@@ -7,6 +7,7 @@ from torchvision import datasets, transforms
 from torch.utils.data.sampler import SubsetRandomSampler
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(f"Attempting to run ResNet18 with HDC on device {device}")
 
 torch.zeros(1).cuda()
 
@@ -26,7 +27,6 @@ from model.resnet import ResNet, ResidualBlock
 from model.resnet_hdc import ResNet18_HDC
 
 model = ResNet18_HDC(num_classes=num_classes, verbose=model_verbose).to(device)
-print(f"Attempting to run ResNet18 with HDC on device {device}")
 print(f"Model architecture: {str(model)}")
 
 # %%
@@ -79,6 +79,7 @@ def data_loader(batch_size, random_seed=42, valid_size=0.1, shuffle=True, test=F
 # %%
 train_loader, valid_loader = data_loader(batch_size=batch_size)
 test_loader = data_loader(batch_size=batch_size, test=True)
+print("Successfully created data loaders")
 
 # %%
 # Loss and optimizer
@@ -89,6 +90,7 @@ optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, weight_decay =
 import gc
 total_step = len(train_loader)
 
+print("Beginning training")
 for epoch in range(num_epochs):
     for i, (images, labels) in enumerate(train_loader):  
         print(f"Epoch {epoch + 1}/{num_epochs} | Batch {i}")
