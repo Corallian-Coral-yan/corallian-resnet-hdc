@@ -172,3 +172,82 @@ class ResNet18_HDC(nn.Module):
     def _print(self, *args, **kwargs):
         if self.verbose:
             print(*args, **kwargs)
+
+
+
+"""
+Resnet101-HDC
+"""
+
+class ResNet101_HDC(nn.Module):
+    def __init__(self, num_classes=10, verbose=False):
+        super().__init__()
+
+        self.verbose = verbose
+        self.layers = \
+        [
+            conv_bn_ac(in_channels=3, out_channels=64, kernel_size=3, stride=2, padding=1),
+            conv_bn_ac(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1),
+            conv_bn_ac(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1),
+            nn.MaxPool2d(kernel_size=3, stride=2),
+
+            ResidualHDCBlock_O(64, 64, 64, 256, 1),
+            ResidualHDCBlock_X(256, 64, 64, 256, 1),
+            ResidualHDCBlock_X(256, 64, 64, 256, 1),
+
+            ResidualHDCBlock_O(256, 128, 128, 512, 1, downsample_rate=2),
+            ResidualHDCBlock_X(512, 128, 128, 512, 1),
+            ResidualHDCBlock_X(512, 128, 128, 512, 1),
+            ResidualHDCBlock_X(512, 128, 128, 512, 1),
+
+            ResidualHDCBlock_O(512, 256, 256, 1024, 2, downsample_rate=2),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 2),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 5),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 9),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 1),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 2),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 5),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 9),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 1),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 2),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 5),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 9),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 1),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 2),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 5),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 9),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 1),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 2),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 5),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 9),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 1),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 2),
+            ResidualHDCBlock_X(1024, 256, 256, 1024, 5),  # 23 blocks in total
+
+            ResidualHDCBlock_O(1024, 512, 512, 2048, 5, downsample_rate=2),
+            ResidualHDCBlock_X(2048, 512, 512, 2048, 9),
+            ResidualHDCBlock_X(2048, 512, 512, 2048, 17),
+
+            nn.AvgPool2d(16, stride=1),   
+        ]
+
+        for i, layer in enumerate(self.layers):
+            self.add_module(f"layer_{i+1}", layer)
+
+        self.fc = nn.Linear(2048, num_classes)
+
+    def forward(self, x):
+        for layer in self.layers:
+            self._print(x.size())
+            x = layer(x)
+
+        self._print(x.size())
+        x = x.view(x.size(0), -1)
+        self._print(x.size())
+        x = self.fc(x)
+
+        return x
+    
+    def _print(self, *args, **kwargs):
+        if self.verbose:
+            print(*args, **kwargs)
