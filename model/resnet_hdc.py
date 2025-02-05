@@ -130,73 +130,42 @@ class ResNet18_HDC(nn.Module):
         super().__init__()
 
         self.verbose = verbose
+        self.layers = \
+        [
+            conv_bn_ac(in_channels=3, out_channels=64, kernel_size=3, stride=2, padding=1),
+            conv_bn_ac(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1),
+            conv_bn_ac(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1),
+            nn.MaxPool2d(kernel_size=3, stride=2),
 
-        # initially 3 channels (R, G, B)
-        # Note: The version of ResNet implemented in the paper uses a different set of initial convolutions
-        # This implementation uses those modified convolutions (original ResNet paper has a single 7x7 conv)
-        self.res1_1 = conv_bn_ac(in_channels=3, out_channels=64, kernel_size=3, stride=2, padding=1)
-        self.res1_2 = conv_bn_ac(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1)
-        self.res1_3 = conv_bn_ac(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1)
+            ResidualHDCBlock_O(64, 64, 64, 64, 1),
+            ResidualHDCBlock_X(64, 64, 64, 64, 1),
 
-        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2)
+            ResidualHDCBlock_O(64, 64, 64, 128, 1, downsample_rate=2),
+            ResidualHDCBlock_X(128, 128, 128, 128, 1),
 
-        self.res2_1 = ResidualHDCBlock_O(64, 64, 64, 64, 1)
-        self.res2_2 = ResidualHDCBlock_X(64, 64, 64, 64, 1)
+            ResidualHDCBlock_O(128, 128, 128, 256, 2, downsample_rate=2),
+            ResidualHDCBlock_X(256, 256, 256, 256, 5),
 
-        # There appears to be a typo in the resnet implementation
-        # most likely this is a type O block, but this is just an assumption
-        # in the original code, this is type D
-        self.res3_1 = ResidualHDCBlock_O(64, 64, 64, 128, 1, downsample_rate=2)
-        self.res3_2 = ResidualHDCBlock_X(128, 128, 128, 128, 1)
+            ResidualHDCBlock_O(256, 256, 256, 512, 5, downsample_rate=2),
+            ResidualHDCBlock_X(512, 512, 512, 512, 9),
 
-        self.res4_1 = ResidualHDCBlock_O(128, 128, 128, 256, 2, downsample_rate=2)
-        self.res4_2 = ResidualHDCBlock_X(256, 256, 256, 256, 5)
+            nn.AvgPool2d(16, stride=1),   
+        ]
 
-        self.res5_1 = ResidualHDCBlock_O(256, 256, 256, 512, 5, downsample_rate=2)
-        self.res5_2 = ResidualHDCBlock_X(512, 512, 512, 512, 9)
+        for i, layer in enumerate(self.layers):
+            self.add_module(f"layer_{i+1}", layer)
 
-        self.avgpool = nn.AvgPool2d(16, stride=1)
         self.fc = nn.Linear(512, num_classes)
 
     def forward(self, x):
-        self._print(x.size())
-        x = self.res1_1(x)
-        self._print(x.size())
-        x = self.res1_2(x)
-        self._print(x.size())
-        x = self.res1_3(x)
-        self._print(x.size())
+        for layer in self.layers:
+            self._print(x.size())
+            x = layer(x)
 
-        x = self.maxpool(x)
         self._print(x.size())
-
-        x = self.res2_1(x)
-        self._print(x.size())
-        x = self.res2_2(x)
-        self._print(x.size())
-
-        x = self.res3_1(x)
-        self._print(x.size())
-        x = self.res3_2(x)
-        self._print(x.size())
-
-        x = self.res4_1(x)
-        self._print(x.size())
-        x = self.res4_2(x)
-        self._print(x.size())
-
-        x = self.res5_1(x)
-        self._print(x.size())
-        x = self.res5_2(x)
-        self._print(x.size())
-
-        x = self.avgpool(x)
-        self._print(x.size())
-        
         x = x.view(x.size(0), -1)
         self._print(x.size())
         x = self.fc(x)
-        self._print(x.size())
 
         return x
     
